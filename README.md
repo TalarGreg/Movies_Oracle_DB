@@ -1,0 +1,1 @@
+This database is illogical. This means a database consist data which are not logical. For example you can find information that one old film is currently shown in one cinema, but only in this cinema. It can happen because the data is created as result of loader package which create data randomly. So this database is only to learn and manage data inside it. 
