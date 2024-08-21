@@ -1,3 +1,10 @@
+create or replace PACKAGE loader AS
+    PROCEDURE generate_random_screenings(p_num_screenings IN NUMBER); -- it loads data to table screenings, INPUT is amount how much records will add
+	PROCEDURE create_current_shown_table(p_perc_of_movies IN NUMBER); -- it choose and change which movies are currently display, in which cinema, INPUT is percent of population which is currenctly shown
+    PROCEDURE generate_random_timeline; --generate and insert data to CURRENTLY_SHOWN.TIMELINE_ID column, based on SCREENINGS_TIMELINE table
+end;
+/
+
 create or replace PACKAGE BODY loader AS
 
     -- load random data to table Movies
