@@ -1,5 +1,5 @@
 CREATE OR REPLACE PROCEDURE generate_random_screenings(
-    p_num_screenings IN NUMBER -- liczba seansów do wygenerowania
+    p_num_screenings IN NUMBER -- number of screening to generate
 ) IS
     v_screening_id Screenings.screening_id%TYPE;
     v_movie_id Movies.movie_id%TYPE;

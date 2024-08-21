@@ -26,3 +26,26 @@ CREATE TABLE Screenings (
     cinema_id INT REFERENCES Cinema(cinema_id),
 	note NUMBER
 );
+
+CREATE TABLE currently_shown AS
+SELECT 
+    m.MOVIE_ID, c.CINEMA_ID, cast(NULL as number) as currently_shown 
+FROM movies m
+FULL JOIN cinema c on 1=1;
+
+
+CREATE TABLE screenings_timeline (
+    timeline_id INT PRIMARY KEY,
+    start_time_line DATE
+);
+
+  CREATE TABLE "CURRENTLY_SHOWN" 
+   (	"MOVIE_ID" NUMBER, 
+	"CINEMA_ID" NUMBER(*,0), 
+	"CURRENTLY_SHOWN" NUMBER(1,0) DEFAULT 0, 
+	"TIMELINE_ID" NUMBER, 
+	 CHECK (currently_shown IN (0, 1)) ENABLE
+   ) ;
+
+  ALTER TABLE "CURRENTLY_SHOWN" ADD FOREIGN KEY ("TIMELINE_ID")
+	  REFERENCES "SCREENINGS_TIMELINE" ("TIMELINE_ID") ENABLE;

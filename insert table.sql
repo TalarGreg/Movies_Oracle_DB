@@ -250,3 +250,19 @@ INSERT INTO Cinema (cinema_id, name, location, capacity) VALUES (35, 'Kino Morsk
 INSERT INTO Screenings (screening_id, movie_id, screening_date, cinema_id) VALUES (3, 1, TO_DATE('2015-11-25', 'YYYY-MM-DD'), 35);
 INSERT INTO Screenings (screening_id, movie_id, screening_date, cinema_id) VALUES (screening_seq.nextval, 1, TO_DATE('2015-11-25', 'YYYY-MM-DD'), 35);
 
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (1, TO_DATE('01-01-2000 9:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (2, TO_DATE('01-01-2000 10:30:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (3, TO_DATE('01-01-2000 11:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (4, TO_DATE('01-01-2000 12:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (5, TO_DATE('01-01-2000 12:30:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (6, TO_DATE('01-01-2000 13:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (7, TO_DATE('01-01-2000 14:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (8, TO_DATE('01-01-2000 15:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (9, TO_DATE('01-01-2000 16:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (10, TO_DATE('01-01-2000 17:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (11, TO_DATE('01-01-2000 18:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (12, TO_DATE('01-01-2000 19:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (13, TO_DATE('01-01-2000 19:30:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (14, TO_DATE('01-01-2000 20:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (15, TO_DATE('01-01-2000 21:00:00', 'DD-MM-YYYY HH24:MI:SS'));
+INSERT INTO screenings_timeline (timeline_id, start_time_line) VALUES (16, TO_DATE('01-01-2000 22:00:00', 'DD-MM-YYYY HH24:MI:SS'));

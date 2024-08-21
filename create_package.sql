@@ -1,44 +1,6 @@
-CREATE OR REPLACE PACKAGE loader AS
-    PROCEDURE generate_random_screenings(p_num_screenings IN NUMBER); -- it loads data to table screenings, INPUT is amount how much records will add
-	PROCEDURE create_current_shown_table(p_perc_of_movies IN NUMBER); -- it choose and change which movies are currently display, in which cinema, INPUT is percent of population which is currenctly shown
-    -- Możesz dodać więcej procedur w zależności od potrzeb
-end;
-    
-CREATE OR REPLACE PACKAGE BODY loader AS
+create or replace PACKAGE BODY loader AS
 
-    PROCEDURE create_current_shown_table(p_perc_of_movies IN NUMBER) IS
-
-	CURSOR c_update_currently_shown IS
-    	SELECT MOVIE_ID, CINEMA_ID, CURRENTLY_SHOWN
-    	FROM currently_shown
-    	SAMPLE(12)
-    	FOR UPDATE;
-    
-    BEGIN
-
-    	EXECUTE IMMEDIATE 'DROP TABLE currently_shown';
-		--DROP TABLE currently_shown;
-
-		EXECUTE IMMEDIATE 'CREATE TABLE currently_shown AS
-		SELECT 
-		    m.MOVIE_ID, c.CINEMA_ID, cast(NULL as number) as currently_shown 
-		FROM movies m
-		FULL JOIN cinema c on 1=1';
-
-		EXECUTE IMMEDIATE 'ALTER TABLE currently_shown
-		MODIFY currently_shown NUMBER(1) DEFAULT 0 CHECK (currently_shown IN (0, 1))';
-
-		FOR rec IN c_update_currently_shown LOOP
-            UPDATE currently_shown
-            SET currently_shown = 1
-            WHERE CURRENT OF c_update_currently_shown;
-		END LOOP;
-
-			
-		COMMIT;
-    END create_current_shown_table;
-
-    -- Procedura do ładowania danych do tabeli Movies
+    -- load random data to table Movies
     PROCEDURE generate_random_screenings(p_num_screenings IN NUMBER) IS
     
 		    v_screening_id Screenings.screening_id%TYPE;
@@ -73,6 +35,8 @@ CREATE OR REPLACE PACKAGE BODY loader AS
 					EXCEPTION
 		      		WHEN NO_DATA_FOUND THEN
 		        	v_screening_date := NULL;
+                    WHEN OTHERS THEN
+                    DBMS_OUTPUT.PUT_LINE('Wystąpił błąd: ' || SQLERRM);
 				END;
 				--DBMS_OUTPUT.PUT_LINE(v_screening_date);
 		
@@ -108,10 +72,66 @@ CREATE OR REPLACE PACKAGE BODY loader AS
 		
 		END generate_random_screenings;
 
+    
+
+    PROCEDURE create_current_shown_table(p_perc_of_movies IN NUMBER) IS
+
+	CURSOR c_update_currently_shown IS
+    	SELECT MOVIE_ID, CINEMA_ID, CURRENTLY_SHOWN
+    	FROM currently_shown
+    	SAMPLE(12)
+    	FOR UPDATE;
+    
+    BEGIN
+
+    	EXECUTE IMMEDIATE 'DROP TABLE currently_shown';
+		--DROP TABLE currently_shown;
+
+		EXECUTE IMMEDIATE 'CREATE TABLE currently_shown AS
+		SELECT 
+		    m.MOVIE_ID, c.CINEMA_ID, cast(NULL as number) as currently_shown 
+		FROM movies m
+		FULL JOIN cinema c on 1=1';
+
+		EXECUTE IMMEDIATE 'ALTER TABLE currently_shown
+		MODIFY currently_shown NUMBER(1) DEFAULT 0 CHECK (currently_shown IN (0, 1))';
+
+		FOR rec IN c_update_currently_shown LOOP
+            UPDATE currently_shown
+            SET currently_shown = 1
+            WHERE CURRENT OF c_update_currently_shown;
+		END LOOP;
+
+			
+		COMMIT;
+    END create_current_shown_table;
+
+    PROCEDURE generate_random_timeline IS
+
+	CURSOR c_update_currently_shown_timeline IS
+    	SELECT MOVIE_ID, CINEMA_ID, CURRENTLY_SHOWN, TIMELINE_ID
+    	FROM currently_shown
+    	WHERE CURRENTLY_SHOWN = 1 
+    	FOR UPDATE;
+
+    v_min_timeline_id screenings_timeline.TIMELINE_ID%TYPE;
+    v_max_timeline_id screenings_timeline.TIMELINE_ID%TYPE;
+
+    BEGIN
+
+    SELECT MIN(TIMELINE_ID) INTO v_min_timeline_id FROM screenings_timeline;
+    SELECT MAX(TIMELINE_ID) INTO v_max_timeline_id FROM screenings_timeline;
+
+        FOR rec IN c_update_currently_shown_timeline LOOP
+            UPDATE currently_shown
+            SET TIMELINE_ID = ROUND(DBMS_RANDOM.VALUE(v_min_timeline_id, v_max_timeline_id))
+            --SET TIMELINE_ID = ROUND(DBMS_RANDOM.VALUE(1, 14))
+            WHERE CURRENT OF c_update_currently_shown_timeline;
+		END LOOP;
+
+    END generate_random_timeline;
+
+
+
 END loader;
 /
-
-BEGIN
---loader.generate_random_screenings(15);
-loader.create_current_shown_table(12);
-END;
