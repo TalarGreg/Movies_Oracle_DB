@@ -2,14 +2,15 @@ create or replace PACKAGE loader AS
     PROCEDURE generate_random_screenings(p_num_screenings IN NUMBER); -- it loads data to table screenings, INPUT is amount how much records will add
 	PROCEDURE create_current_shown_table(p_perc_of_movies IN NUMBER); -- it choose and change which movies are currently display, in which cinema, INPUT is percent of population which is currenctly shown
     PROCEDURE generate_random_timeline; --generate and insert data to CURRENTLY_SHOWN.TIMELINE_ID column, based on SCREENINGS_TIMELINE table
+    PROCEDURE generate_screenings_planned_table; 
 end;
 /
 
 create or replace PACKAGE BODY loader AS
 
     -- load random data to table Movies
-    PROCEDURE generate_random_screenings(p_num_screenings IN NUMBER) IS
-    
+   PROCEDURE generate_random_screenings(p_num_screenings IN NUMBER) IS
+            
 		    v_screening_id Screenings.screening_id%TYPE;
 		    v_movie_id Movies.movie_id%TYPE;
 		    v_screening_date Screenings.screening_date%TYPE;
@@ -81,7 +82,7 @@ create or replace PACKAGE BODY loader AS
 
     
 
-    PROCEDURE create_current_shown_table(p_perc_of_movies IN NUMBER) IS
+   PROCEDURE create_current_shown_table(p_perc_of_movies IN NUMBER) IS
 
 	CURSOR c_update_currently_shown IS
     	SELECT MOVIE_ID, CINEMA_ID, CURRENTLY_SHOWN
@@ -91,29 +92,46 @@ create or replace PACKAGE BODY loader AS
     
     BEGIN
 
-    	EXECUTE IMMEDIATE 'DROP TABLE currently_shown';
-		--DROP TABLE currently_shown;
+    	-- EXECUTE IMMEDIATE 'DROP TABLE currently_shown';
+		-- --DROP TABLE currently_shown;
 
-		EXECUTE IMMEDIATE 'CREATE TABLE currently_shown AS
-		SELECT 
-		    m.MOVIE_ID, c.CINEMA_ID, cast(NULL as number) as currently_shown 
-		FROM movies m
-		FULL JOIN cinema c on 1=1';
+		-- EXECUTE IMMEDIATE 'CREATE TABLE currently_shown AS
+		-- SELECT 
+		--     CURRENTLY_SHOWN_ID_SEQ.NEXTVAL as currently_shown_id, m.MOVIE_ID, c.CINEMA_ID, cast(NULL as number) as currently_shown 
+		-- FROM movies m
+		-- FULL JOIN cinema c on 1=1';
 
-		EXECUTE IMMEDIATE 'ALTER TABLE currently_shown
-		MODIFY currently_shown NUMBER(1) DEFAULT 0 CHECK (currently_shown IN (0, 1))';
+		-- EXECUTE IMMEDIATE 'ALTER TABLE currently_shown
+		-- MODIFY currently_shown NUMBER(1) DEFAULT 0 CHECK (currently_shown IN (0, 1))';
 
-		FOR rec IN c_update_currently_shown LOOP
+		-- FOR rec IN c_update_currently_shown LOOP
+        --     UPDATE currently_shown
+        --     SET currently_shown = 1
+        --     WHERE CURRENT OF c_update_currently_shown;
+		-- END LOOP;
+
+			
+		-- COMMIT;
+        --DBMS_OUTPUT.PUT_LINE('Brak danych dla podanego ID pracownika.');
+        EXECUTE IMMEDIATE 'TRUNCATE TABLE currently_shown';
+
+        INSERT INTO currently_shown (CURRENTLY_SHOWN_ID, MOVIE_ID, CINEMA_ID, currently_shown)
+        SELECT 
+		     CURRENTLY_SHOWN_ID_SEQ.NEXTVAL, m.MOVIE_ID, c.CINEMA_ID, cast(NULL as number) as currently_shown 
+        FROM movies m
+		FULL JOIN cinema c on 1=1;
+
+        FOR rec IN c_update_currently_shown LOOP
             UPDATE currently_shown
             SET currently_shown = 1
             WHERE CURRENT OF c_update_currently_shown;
 		END LOOP;
 
-			
-		COMMIT;
+    COMMIT;
+
     END create_current_shown_table;
 
-    PROCEDURE generate_random_timeline IS
+   PROCEDURE generate_random_timeline IS
 
 	CURSOR c_update_currently_shown_timeline IS
     	SELECT MOVIE_ID, CINEMA_ID, CURRENTLY_SHOWN, TIMELINE_ID
@@ -138,7 +156,32 @@ create or replace PACKAGE BODY loader AS
 
     END generate_random_timeline;
 
+   PROCEDURE generate_screenings_planned_table IS
 
+    CURSOR c_screenings_planned IS
+    	select CURRENTLY_SHOWN_ID  -- 852 records
+        from CURRENTLY_SHOWN 
+        where CURRENTLY_SHOWN = 1 
+        and timeline_id is not null;
+
+    --v_CURRENTLY_SHOWN_ID
+    --v_screening_planned_date
+
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('Brak danych dla podanego ID pracownika.');
+
+        FOR rec IN c_screenings_planned LOOP
+
+            INSERT INTO SCREENINGS_PLANNED_2 (SCREENING_PLANNED_ID, CURRENTLY_SHOWN_ID, SCREENING_PLANNED_DATE) VALUES (screenings_planned_ID_seq.nextval, rec.CURRENTLY_SHOWN_ID, TRUNC(SYSDATE + DBMS_RANDOM.VALUE(0, 14)));
+
+		END LOOP;
+
+        --INSERT INTO screenings_planned (screenings_planned_ID, CURRENTLY_SHOWN_ID, screening_planned_date)
+        --VALUES (screenings_planned_ID_seq.nextval, v_CURRENTLY_SHOWN_ID, v_screening_planned_date);
+
+        COMMIT;
+
+    END generate_screenings_planned_table;
 
 END loader;
 /
